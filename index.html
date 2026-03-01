@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturn • ringed jewel • animated wishes</title>
+    <!-- Google fonts: eye-catching mix -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Exo+2:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #f0f8ff;
+            background-color: #030514;
+            overflow-x: hidden;
+        }
+
+        /* ---------- FIXED SPACE BACKGROUND (slideshow) ---------- */
+        #bg-slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 2s ease-in-out;
+            animation: bgPulse 20s infinite alternate;
+        }
+        @keyframes bgPulse {
+            0% { filter: brightness(0.5) saturate(1.2); }
+            100% { filter: brightness(0.9) saturate(1.8); }
+        }
+
+        /* ---------- ANIMATED STARFIELD (canvas) ---------- */
+        #starfield-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* floating planets (planet related animations) */
+        .floating-planets {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .planet {
+            position: absolute;
+            background: radial-gradient(circle at 30% 30%, #ffd966, #b5835a, #4a2c1a);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255,215,0,0.4), inset -10px -10px 30px rgba(0,0,0,0.7);
+            opacity: 0.25;
+            animation: floatAround 40s infinite alternate ease-in-out;
+        }
+        .planet::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 20%;
+            height: 20%;
+            background: radial-gradient(circle, #fff9e6, rgba(255,255,255,0.2));
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(30px, -40px) rotate(15deg); }
+        }
+        .p1 { width: 180px; height: 180px; top: 10%; left: 5%; animation-duration: 28s; }
+        .p2 { width: 300px; height: 300px; bottom: -50px; right: 0; background: radial-gradient(circle at 20% 20%, #b0c4de, #2f4f4f); opacity: 0.2; animation-duration: 45s; }
+        .p3 { width: 120px; height: 120px; top: 60%; left: 80%; background: radial-gradient(circle at 25% 25%, #e0b0ff, #4b2e54); opacity: 0.3; animation-duration: 22s; }
+        .p4 { width: 250px; height: 250px; top: 80%; left: 15%; background: radial-gradient(circle at 20% 20%, #ffb347, #8b4513); opacity: 0.15; animation-duration: 55s; }
+
+        /* main content overlay (semi‑transparent) */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 5rem;
+            background-color: rgba(2, 10, 22, 0.65);
+            backdrop-filter: blur(5px);
+            border-left: 2px solid rgba(255,215,0,0.2);
+            border-right: 2px solid rgba(255,215,0,0.2);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        /* vibrant text & readability */
+        h1, h2, h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px cyan, 0 0 20px blue;
+            animation: hueShift 12s infinite alternate;
+        }
+        @keyframes hueShift {
+            0% { color: #ffd966; text-shadow: 0 0 5px gold, 0 0 15px orange; }
+            25% { color: #ffb3ba; text-shadow: 0 0 5px #ff6f91, 0 0 15px #ff3b6f; }
+            50% { color: #bae1ff; text-shadow: 0 0 5px #3b9eff, 0 0 15px #004cff; }
+            75% { color: #c2f0c2; text-shadow: 0 0 5px #00e676, 0 0 15px #00c853; }
+            100% { color: #ffccff; text-shadow: 0 0 5px #ea80fc, 0 0 15px #aa00ff; }
+        }
+
+        h1 { font-size: 3.5rem; margin-bottom: 0.5rem; text-align: center; font-family: 'Audiowide', cursive; }
+        h2 { font-size: 2.5rem; border-bottom: 3px solid currentColor; margin: 2rem 0 1rem; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.8rem; margin: 1.5rem 0 0.8rem; }
+        .subhead { text-align: center; font-size: 1.5rem; margin-bottom: 2rem; font-style: italic; }
+
+        /* saturn main image */
+        .hero-saturn {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            filter: drop-shadow(0 0 30px rgba(255,215,0,0.7));
+            animation: levitate 8s infinite alternate;
+        }
+        .hero-saturn img {
+            max-width: 400px;
+            width: 100%;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,200,0.6);
+            transition: transform 0.5s;
+        }
+        .hero-saturn img:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        @keyframes levitate {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+
+        /* cards / sections sliding effect */
+        .section-card {
+            background: rgba(0, 15, 30, 0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 30px;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,255,255,0.2);
+            transition: all 0.5s;
+            opacity: 0;
+            transform: translateX(-50px) scale(0.95);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .section-card.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+        /* alternate sliding direction */
+        .section-card:nth-child(even).visible {
+            transform: translateX(0) scale(1);
+        }
+        .section-card:nth-child(even) {
+            transform: translateX(50px) scale(0.95);
+        }
+
+        /* tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-family: 'Space Mono', monospace;
+            background: rgba(0,0,0,0.4);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        th {
+            background: rgba(255,215,0,0.25);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffecb3;
+        }
+        td {
+            color: #e0e0ff;
+        }
+        tr:hover td {
+            background: rgba(100,150,255,0.2);
+        }
+
+        /* lists & inline data */
+        ul, ol {
+            padding-left: 2rem;
+            margin: 1rem 0;
+        }
+        li {
+            margin: 0.5rem 0;
+            color: #d0e0ff;
+        }
+        strong, b {
+            color: #ffb870;
+            text-shadow: 0 0 5px #ff8c00;
+        }
+
+        /* floating action buttons (right side) */
+        .float-buttons-right {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        .float-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd966, #b8860b);
+            border: 2px solid white;
+            box-shadow: 0 0 20px cyan;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: float 3s infinite alternate;
+            color: black;
+            font-weight: bold;
+        }
+        .float-btn:hover {
+            transform: scale(1.2) rotate(20deg);
+            background: radial-gradient(circle at 30% 30%, #fff0b5, #ffa500);
+            box-shadow: 0 0 40px red;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+
+        /* new wish button left side */
+        .wish-button-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .wish-btn {
+            width: auto;
+            min-width: 70px;
+            height: 70px;
+            border-radius: 50px;
+            background: radial-gradient(circle at 30% 30%, #c3a5ff, #5d3fd3);
+            border: 3px solid gold;
+            box-shadow: 0 0 30px violet;
+            font-size: 1.4rem;
+            padding: 0 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: softGlow 3s infinite alternate;
+            color: #fff8e7;
+            font-weight: bold;
+            font-family: 'Audiowide', cursive;
+            letter-spacing: 2px;
+        }
+        .wish-btn:hover {
+            transform: scale(1.1) rotate(-3deg);
+            background: radial-gradient(circle at 30% 30%, #e1c9ff, #7a4fff);
+            box-shadow: 0 0 60px gold;
+        }
+        @keyframes softGlow {
+            0% { box-shadow: 0 0 20px violet; }
+            100% { box-shadow: 0 0 50px cyan, 0 0 20px purple; }
+        }
+        #current-wish-message {
+            background: rgba(10, 5, 30, 0.8);
+            backdrop-filter: blur(8px);
+            color: #ffefc0;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            border: 1px solid #ffd966;
+            box-shadow: 0 0 30px rgba(255,215,0,0.5);
+            max-width: 280px;
+            font-family: 'Space Mono', monospace;
+            border-left: 5px solid #aa80ff;
+        }
+
+        /* animation buttons (in content) */
+        .anim-btn {
+            background: transparent;
+            border: 2px solid #ffd966;
+            color: #ffd966;
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px gold;
+            margin: 1rem 0.5rem 1rem 0;
+            backdrop-filter: blur(5px);
+        }
+        .anim-btn:hover {
+            background: #ffd966;
+            color: black;
+            box-shadow: 0 0 30px orange;
+            transform: scale(1.1) rotate(-2deg);
+        }
+
+        /* explosion overlay */
+        .explosion-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .explosion-effect {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #ff0, #f50, #f00, #a00, transparent);
+            border-radius: 50%;
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 0 200px 50px #ff4500;
+        }
+        .explosion-effect.active {
+            animation: explode 1.5s forwards;
+        }
+        @keyframes explode {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(15); opacity: 0.9; background: radial-gradient(circle, #fff, #ff0, #f50, #f00); }
+            100% { transform: scale(30); opacity: 0; background: radial-gradient(circle, #ffa500, #ff4500, #8b0000, transparent); }
+        }
+
+        /* utilities */
+        .note {
+            background: rgba(0,255,255,0.1);
+            padding: 1rem;
+            border-left: 8px solid cyan;
+            font-style: italic;
+        }
+        .value {
+            color: #ffd700;
+            font-weight: 700;
+        }
+        pre {
+            background: #011016;
+            padding: 1rem;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            color: #b0e0e6;
+            overflow-x: auto;
+        }
+        hr {
+            border: 1px solid rgba(255,215,0,0.3);
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- background slideshow (space images) -->
+    <div id="bg-slideshow"></div>
+    <!-- animated starfield canvas -->
+    <canvas id="starfield-canvas"></canvas>
+    <!-- floating planets -->
+    <div class="floating-planets">
+        <div class="planet p1"></div>
+        <div class="planet p2"></div>
+        <div class="planet p3"></div>
+        <div class="planet p4"></div>
+    </div>
+
+    <!-- floating buttons (right) -->
+    <div class="float-buttons-right">
+        <div class="float-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
+        <div class="float-btn" onclick="document.getElementById('explode-trigger').click()">💥</div>
+        <div class="float-btn" onclick="window.location='#top'">🪐</div>
+    </div>
+
+    <!-- WISH BUTTON (left) with changing wish -->
+    <div class="wish-button-container">
+        <div class="wish-btn" id="wishButton">✨ Wish</div>
+        <div id="current-wish-message">"May Saturn's rings guide you"</div>
+    </div>
+
+    <!-- hidden trigger for explosion -->
+    <button id="explode-trigger" style="display:none;" onclick="explode()">boom</button>
+    <div class="explosion-overlay" id="explosionOverlay">
+        <div class="explosion-effect" id="exploder"></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content-wrapper" id="top">
+        <h1>🪐 SATURN: THE RINGED JEWEL</h1>
+        <div class="subhead">a comprehensive scientific odyssey</div>
+
+        <!-- Saturn main image -->
+        <div class="hero-saturn">
+            <img src="saturn.jpg" alt="Saturn with rings" onerror="this.src='https://via.placeholder.com/400x400?text=SATURN+IMAGE'">
+        </div>
+
+        <!-- BASIC PROPERTIES -->
+        <section class="section-card" id="basic">
+            <h2>1. Basic Properties & Identity</h2>
+            <table>
+                <tr><th>Property</th><th>Value</th></tr>
+                <tr><td>Name</td><td>Saturn (Roman god of agriculture; Greek: Cronus)</td></tr>
+                <tr><td>Planetary Type</td><td>Gas Giant (Jovian planet)</td></tr>
+                <tr><td>Age</td><td>~4.6 billion years</td></tr>
+                <tr><td>Location</td><td>Sixth planet from Sun, between Jupiter and Uranus</td></tr>
+                <tr><td>Distance from Sun</td><td>1.353 billion km (perihelion) – 1.514 billion km (aphelion)</td></tr>
+                <tr><td>Average Distance</td><td>1.434 billion km (9.58 AU)</td></tr>
+                <tr><td>Diameter (equatorial)</td><td>120,536 km (9.45 × Earth)</td></tr>
+                <tr><td>Diameter (polar)</td><td>108,728 km (oblateness 0.098)</td></tr>
+                <tr><td>Mass</td><td>5.683 × 10²⁶ kg (95.16 × Earth)</td></tr>
+                <tr><td>Volume</td><td>8.271 × 10¹⁴ km³ (764 × Earth)</td></tr>
+                <tr><td>Density (average)</td><td>0.687 g/cm³ — only planet less dense than water</td></tr>
+                <tr><td>Surface Area</td><td>4.27 × 10¹⁰ km² (83.7 × Earth)</td></tr>
+                <tr><td>Albedo</td><td>0.47 (highly reflective)</td></tr>
+                <tr><td>Apparent Magnitude</td><td>+0.46 to -0.55</td></tr>
+            </table>
+        </section>
+
+        <!-- ORIGIN & FORMATION -->
+        <section class="section-card">
+            <h2>2. Origin & Formation: The Ringed Jewel</h2>
+            <h3>Cosmic origins – the second giant</h3>
+            <p><strong>13.8 billion years ago:</strong> Big Bang creates quarks → protons/neutrons → H (75%), He (25%). Multiple stellar generations, supernovae.</p>
+            <p><strong>4.6 billion years ago:</strong> Molecular cloud collapses, protoplanetary disk.</p>
+            <h4>Formation Timeline (core accretion)</h4>
+            <table>
+                <tr><th>Stage</th><th>Time after SS formation</th><th>Event</th></tr>
+                <tr><td>1</td><td>0-1 Myr</td><td>Dust condensation beyond frost line</td></tr>
+                <tr><td>2</td><td>1-3 Myr</td><td>Icy planetesimals → ~10‑20 M⊕ core</td></tr>
+                <tr><td>3</td><td>3-4 Myr</td><td>Critical mass, gas accretion begins</td></tr>
+                <tr><td>4</td><td>4-5 Myr</td><td>Rapid gas accretion → ~95 M⊕</td></tr>
+                <tr><td>5</td><td>5-8 Myr</td><td>Gap formation, migration</td></tr>
+                <tr><td>6</td><td>8-10 Myr</td><td>Circumplanetary disk forms moons</td></tr>
+            </table>
+            <p><strong>Grand Tack:</strong> Saturn trapped in 3:2 resonance with Jupiter, reversed migration, shaped asteroid belt.</p>
+            <p>Primordial Saturn hotter, larger; contracted, helium rain began ~2 billion years ago. Rings likely only 100‑200 million years old.</p>
+        </section>
+
+        <!-- COMPOSITION -->
+        <section class="section-card">
+            <h2>3. Composition (Elemental & Chemical)</h2>
+            <h3>Atmospheric composition (by volume)</h3>
+            <table>
+                <tr><th>Gas</th><th>Percentage</th><th>Notes</th></tr>
+                <tr><td>Hydrogen (H₂)</td><td>~96.3%</td><td>Molecular hydrogen</td></tr>
+                <tr><td>Helium (He)</td><td>~3.25%</td><td>Depleted (helium rain)</td></tr>
+                <tr><td>Methane (CH₄)</td><td>~0.2%</td><td>Trace</td></tr>
+                <tr><td>Ammonia (NH₃)</td><td>~0.02%</td><td>Clouds</td></tr>
+                <tr><td>Water (H₂O)</td><td>~0.1%</td><td>Frozen deep</td></tr>
+                <tr><td>Hydrogen deuteride (HD)</td><td>~0.005%</td><td>D/H ratio</td></tr>
+                <tr><td>Ethane, acetylene</td><td>Trace</td><td>Photochemical</td></tr>
+            </table>
+            <p><span class="value">Helium depletion mystery:</span> only ~3.25% in upper atm (Jupiter ~10%). Helium rain ongoing.</p>
+            <h4>Interior composition (by mass)</h4>
+            <table>
+                <tr><th>Layer</th><th>Composition</th><th>Mass fraction</th></tr>
+                <tr><td>Atmosphere</td><td>H‑He (He‑depleted)</td><td>~5%</td></tr>
+                <tr><td>Molecular envelope</td><td>H‑He + heavy elements</td><td>~30%</td></tr>
+                <tr><td>Metallic hydrogen</td><td>H⁺+e⁻, He droplets</td><td>~40%</td></tr>
+                <tr><td>Core</td><td>Rock, ice, metals</td><td>15‑25%</td></tr>
+            </table>
+        </section>
+
+        <!-- INTERNAL STRUCTURE -->
+        <section class="section-card">
+            <h2>4. Internal Structure & Layers</h2>
+            <pre>                    ← Exosphere (H, He escaping)
+                 ← Thermosphere (auroral heating)
+              ← Stratosphere (haze layers)
+           ← Troposphere (weather layer, clouds)
+        ← Molecular hydrogen envelope (H₂, He)
+     ← Metallic hydrogen envelope (thinner than Jupiter's)
+  ← Core (rock + ice + helium-rich layer)</pre>
+            <h3>Core region</h3>
+            <table>
+                <tr><td>Radius</td><td>~15‑25% Saturn radius (9‑15k km)</td></tr>
+                <tr><td>Mass</td><td>15‑30 M⊕</td></tr>
+                <tr><td>Composition</td><td>Rock, ice (water, ammonia, methane ices)</td></tr>
+                <tr><td>State</td><td>High‑P/T solid/fluid</td></tr>
+                <tr><td>Temperature</td><td>~12,000‑15,000 K (center)</td></tr>
+                <tr><td>Pressure</td><td>~1,000‑1,500 GPa</td></tr>
+            </table>
+        </section>
+
+        <!-- ENERGY & HEAT -->
+        <section class="section-card">
+            <h2>5. Energy & Heat</h2>
+            <p>Internal heat: radiates 1.8× more than received. <span class="value">Helium rain contributes 80‑90%</span> of internal power. Total internal power: ~2.2×10¹⁷ W.</p>
+            <p>Effective temperature with internal heat: 97 K ; without: 74 K. Future: helium rain stops, cools to 74 K.</p>
+        </section>
+
+        <!-- TEMPERATURE & PRESSURE (merged) -->
+        <section class="section-card">
+            <h2>6. Temperature & Pressure Profiles</h2>
+            <h3>Atmospheric temperature by altitude</h3>
+            <table>
+                <tr><th>Altitude (km above 1 bar)</th><th>Pressure (bar)</th><th>Temp (K)</th></tr>
+                <tr><td>+500</td><td>10⁻⁶</td><td>600‑800</td></tr>
+                <tr><td>+300</td><td>10⁻⁴</td><td>400‑500</td></tr>
+                <tr><td>+100</td><td>0.01</td><td>160‑180</td></tr>
+                <tr><td>+50</td><td>0.1</td><td>110‑130</td></tr>
+                <tr><td>0</td><td>1.0</td><td>134</td></tr>
+                <tr><td>-50</td><td>2‑4</td><td>160‑200</td></tr>
+                <tr><td>-100</td><td>5‑10</td><td>200‑240</td></tr>
+                <tr><td>-150</td><td>15‑25</td><td>240‑270</td></tr>
+                <tr><td>-500</td><td>500</td><td>800‑1000</td></tr>
+            </table>
+            <h3>Pressure at depth</h3>
+            <ul>
+                <li>-500 km: 500 bar</li>
+                <li>-1000 km: 5000 bar</li>
+            </ul>
+        </section>
+
+        <!-- ATMOSPHERIC FEATURES, CLOUDS, WINDS -->
+        <section class="section-card">
+            <h2>9. Atmospheric Features & Weather</h2>
+            <p><span class="value">Jet streams:</span> max wind 500 m/s (1800 km/h). Equatorial jet broad, fast.</p>
+            <p><span class="value">Great White Spots:</span> periodic storms ~every 29.5 yr (1876,1903,1933,1960,1990,2010‑11).</p>
+            <p><span class="value">Polar hexagon:</span> side length ~13,800 km, rotates 10h39m, depth ~100 km (Rossby wave).</p>
+            <p><span class="value">Polar vortex:</span> south pole hurricane, 8000 km diameter, eye 2000 km.</p>
+            <h3>Cloud layers</h3>
+            <table>
+                <tr><th>Layer</th><th>Pressure</th><th>Composition</th></tr>
+                <tr><td>Upper clouds</td><td>0.5‑2 bar</td><td>Ammonia ice</td></tr>
+                <tr><td>Middle clouds</td><td>2‑6 bar</td><td>Ammonium hydrosulfide</td></tr>
+                <tr><td>Lower clouds</td><td>2.5‑9.5 bar</td><td>Water ice</td></tr>
+                <tr><td>Deep clouds</td><td>10‑20 bar</td><td>Ammonia‑water droplets</td></tr>
+            </table>
+        </section>
+
+        <!-- ROTATION, ORBIT, MAGNETIC FIELD etc. -->
+        <section class="section-card">
+            <h2>11. Rotation • Orbit • Magnetosphere</h2>
+            <p><strong>Rotation periods:</strong> System I (eq) 10h14m, System II 10h38m, System III (interior) 10h39m24s. Oblateness 0.098 (most flattened).</p>
+            <p><strong>Orbital:</strong> 29.4571 yr, eccentricity 0.0565, axial tilt 26.73° → seasons each ~7.4 yr.</p>
+            <p><strong>Magnetic field:</strong> moment 4.6×10²⁵ Am² (580× Earth), tilt <0.5° (unique).</p>
+            <p>Magnetosphere shaped by Enceladus' water plumes.</p>
+        </section>
+
+        <!-- RINGS -->
+        <section class="section-card">
+            <h2>15. Rings: The Crown Jewel</h2>
+            <table>
+                <tr><th>Ring</th><th>Distance (km)</th><th>Width</th><th>Composition</th></tr>
+                <tr><td>D</td><td>66k‑74k</td><td>7500 km</td><td>dust</td></tr>
+                <tr><td>C</td><td>74k‑92k</td><td>18k km</td><td>water ice, dust</td></tr>
+                <tr><td>B</td><td>92k‑117.5k</td><td>25.5k km</td><td>brightest</td></tr>
+                <tr><td>Cassini Div</td><td>117.5‑122.2k</td><td>4700 km</td><td>low density</td></tr>
+                <tr><td>A</td><td>122.2‑136.8k</td><td>14.6k km</td><td>bright</td></tr>
+                <tr><td>F</td><td>~140k</td><td>50‑300 m</td><td>braided</td></tr>
+                <tr><td>G</td><td>166k‑174k</td><td>8000 km</td><td>faint</td></tr>
+                <tr><td>E</td><td>180k‑480k</td><td>300k km</td><td>water ice (Enceladus)</td></tr>
+            </table>
+            <p>Particles: 99% water ice, cm to 10 m, thickness 5‑20 m. Mass ~1.5×10¹⁹ kg, age ~100‑200 Myr. Shepherd moons: Pan, Daphnis, Prometheus, Pandora.</p>
+        </section>
+
+        <!-- MOONS (including Enceladus & Titan) -->
+        <section class="section-card">
+            <h2>16. Moons: A Diverse System</h2>
+            <p>146 confirmed moons. Major moons: Mimas, Enceladus, Tethys, Dione, Rhea, Titan (5150 km, thick atmosphere, methane lakes), Hyperion, Iapetus.</p>
+            <p><span class="value">Enceladus:</span> 504 km, global subsurface ocean (30‑40 km deep), 100+ geysers, complex organics (amino acid precursors) – top life candidate.</p>
+            <p><span class="value">Titan:</span> 95% N₂, 5% CH₄, 1.45 bar, -179°C, methane lakes, subsurface ocean.</p>
+        </section>
+
+        <!-- LIFE POTENTIAL, BLACK HOLE, FAILED STAR -->
+        <section class="section-card">
+            <h2>17‑22. Life, Black Hole, Star Comparison</h2>
+            <p><strong>Life on Saturn itself:</strong> extremely unlikely. <strong>Enceladus:</strong> promising – liquid water, hydrothermal vents, C,H,N,O,P,S, complex organics. <strong>Titan:</strong> prebiotic chemistry.</p>
+            <p><strong>Black hole possibility:</strong> no – mass too small (needs >3 M☉). Schwarzschild radius ~0.8 m.</p>
+            <p><strong>Why not a star:</strong> needs 42× mass for deuterium fusion, 250× for hydrogen fusion.</p>
+        </section>
+
+        <!-- QUANTUM & LARGE SCALE -->
+        <section class="section-card">
+            <h2>22‑23. Quantum Behavior & Large‑Scale Properties</h2>
+            <p>Helium immiscibility, electron degeneracy, magnetic dynamo. Total mass 5.683×10²⁶ kg, volume 827 trillion km³, atoms ~10⁵³. Human scale: walking equator 21 yr, fall to core 1.5 hr.</p>
+        </section>
+
+        <!-- MYSTERIES -->
+        <section class="section-card">
+            <h2>24. Mysteries & Unsolved Questions</h2>
+            <ul>
+                <li>Core structure – diffuse or compact?</li>
+                <li>Helium rain still active?</li>
+                <li>Ring age & origin?</li>
+                <li>Enceladus life?</li>
+                <li>Titan methane source?</li>
+                <li>Magnetic alignment</li>
+                <li>Hexagon stability</li>
+                <li>Great White Spot triggers</li>
+                <li>Iapetus dichotomy</li>
+            </ul>
+        </section>
+
+        <!-- SUMMARY BUTTON + explosion trigger button (visible) -->
+        <button class="anim-btn" onclick="explode()">💥 CRASH & EXPLODE 💥</button>
+        <button class="anim-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ RING VAULT</button>
+
+        <hr>
+        <p style="text-align:center;">All data included. Saturn – least dense, most photogenic, best hope for alien life. 🪐</p>
+    </div>
+
+    <script>
+        // background slideshow (space1.jpg to space8.jpg)
+        const images = [
+            'space1.jpg', 'space2.jpg', 'space3.jpg', 'space4.jpg',
+            'space5.jpg', 'space6.jpg', 'space7.jpg', 'space8.jpg'
+        ];
+        let idx = 0;
+        const bgDiv = document.getElementById('bg-slideshow');
+        function changeBg() {
+            bgDiv.style.backgroundImage = `url('${images[idx]}')`;
+            idx = (idx + 1) % images.length;
+        }
+        changeBg(); // initial
+        setInterval(changeBg, 8000); // change every 8 sec
+
+        // sliding cards (intersection observer)
+        const cards = document.querySelectorAll('.section-card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.2 });
+        cards.forEach(c => observer.observe(c));
+
+        // explosion function
+        function explode() {
+            const exploder = document.getElementById('exploder');
+            exploder.classList.remove('active');
+            void exploder.offsetWidth; // reflow
+            exploder.classList.add('active');
+            setTimeout(() => {
+                exploder.classList.remove('active');
+            }, 1600);
+        }
+
+        // ---------- ANIMATED STARFIELD (canvas) ----------
+        const canvas = document.getElementById('starfield-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let stars = [];
+        const STAR_COUNT = 250;
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < STAR_COUNT; i++) {
+                stars.push({
+                    x: Math.random(),
+                    y: Math.random(),
+                    radius: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.02 + 0.005,
+                    brightness: Math.random() * 0.7 + 0.3,
+                });
+            }
+        }
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, width, height);
+            // subtle gradient overlay to blend with slideshow
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(0, 0, width, height);
+            
+            stars.forEach(s => {
+                // update position (horizontal drift)
+                s.x += s.speed * 0.3; // slow drift to right
+                if (s.x > 1) s.x = 0;
+                
+                // twinkling: random brightness variation
+                const twinkle = Math.sin(Date.now() * 0.002 + s.x * 10) * 0.2 + 0.8;
+                const alpha = s.brightness * twinkle * 0.8;
+                
+                ctx.beginPath();
+                ctx.arc(s.x * width, s.y * height, s.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 240, 200, ${alpha})`;
+                ctx.fill();
+                // occasional glow
+                if (s.radius > 1.8) {
+                    ctx.shadowColor = '#fffacd';
+                    ctx.shadowBlur = 8;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            });
+            requestAnimationFrame(drawStars);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+        resizeCanvas();
+        initStars();
+        drawStars();
+
+        // ---------- WISH BUTTON FUNCTIONALITY (wish varies over time) ----------
+        const wishMessages = [
+            "May Saturn's rings guide your journey",
+            "May you find liquid water on Enceladus",
+            "May Titan's methane lakes reflect your dreams",
+            "May the hexagon protect your heart",
+            "May the Great White Spot bring you clarity",
+            "May the rings of Saturn bless your path",
+            "May you dance with the shepherd moons",
+            "May your life be as dense as Saturn's core",
+            "May you float like Saturn in a cosmic ocean",
+            "May your spirit have the gravity of a gas giant",
+            "May your wishes be as numerous as Saturn's moons",
+            "May your days be long like a Saturn year"
+        ];
+
+        let currentWish = wishMessages[0];
+        const wishDisplay = document.getElementById('current-wish-message');
+        const wishButton = document.getElementById('wishButton');
+
+        // update wish every 8 seconds (time by time)
+        setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * wishMessages.length);
+            currentWish = wishMessages[randomIndex];
+            wishDisplay.textContent = `✨ "${currentWish}"`;
+        }, 8000);
+
+        // on button click, show the current wish (and maybe a surprise)
+        wishButton.addEventListener('click', () => {
+            alert(`🪐 Your wish: ${currentWish}`);
+            // also change wish immediately on click?
+            const newIdx = Math.floor(Math.random() * wishMessages.length);
+            currentWish = wishMessages[newIdx];
+            wishDisplay.textContent = `✨ "${currentWish}"`;
+        });
+
+        // initial wish
+        wishDisplay.textContent = `✨ "${currentWish}"`;
+    </script>
+</body>
+</html>
